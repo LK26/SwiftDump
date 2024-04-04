@@ -126,7 +126,7 @@ extension Data {
     
     func readValue<Type>(_ offset: Int) -> Type? {
         let val:Type? = self.withUnsafeBytes { (ptr:UnsafeRawBufferPointer) -> Type? in
-            return ptr.baseAddress?.advanced(by: offset).load(as: Type.self);
+            return ptr.baseAddress?.advanced(by: offset).loadUnaligned(as: Type.self);
         }
         return val;
     }
@@ -150,6 +150,10 @@ extension Data {
             if (str.isAsciiStr()) {
                 return str;
             }
+        }
+        
+        if (result.count > 10000) {
+            return nil
         }
         
         let tmp = result.reduce("0x") { (result, val:UInt8) -> String in
